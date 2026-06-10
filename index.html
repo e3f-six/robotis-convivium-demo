@@ -168,6 +168,19 @@
   .iocallout b{color:#ffd9a0}
   .iocallout .en{color:var(--muted)}
 
+  /* ---- bilingual explanations (added) ---- */
+  .card .kop{margin:14px 0 0;padding-top:13px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13.5px;line-height:1.72}
+  .card .kop b{color:var(--txt)}
+  .leadko{color:var(--muted);font-size:15px;max-width:840px;line-height:1.78;margin:-16px 0 30px}
+  .leadko b{color:var(--txt)} .leadko code{font-size:13px}
+  .stage .tk{font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.25}
+  .lv-list{font-size:13.5px;color:var(--muted);margin:10px 0 0;padding-left:16px;line-height:1.8}
+  .lv-list li{margin:4px 0} .lv-list b{color:var(--txt)}
+  .runbadge{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.5px;
+    color:var(--good);border:1px solid #2c4a48;background:#0e1a19;padding:5px 12px;
+    border-radius:999px;margin:0 0 16px}
+
   /* ---- roadmap ---- */
   .road{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
   .phase{border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--panel);position:relative}
@@ -239,6 +252,8 @@
     <p class="lead">Every source — a YouTube clip, a world-model rollout, a sim trace, a
     teleop demo — emits the <em>same</em> canonical record. Differences in trustworthiness
     travel as metadata, not as separate code paths.</p>
+    <p class="leadko">어떤 출처든 — 유튜브 클립, 월드모델 롤아웃, 시뮬레이션 트레이스, 텔레오프 시연 —
+    <b>똑같은 표준 레코드</b>를 내보냅니다. 신뢰도 차이는 별도의 코드 경로가 아니라 <b>메타데이터</b>로 따라붙어요.</p>
     <div class="grid g3">
       <div class="card">
         <span class="ic">①</span>
@@ -246,6 +261,9 @@
         <p>Layers exchange small, typed <b>manifests</b> plus immutable <b>artifact URIs</b> —
         never raw frames or tensors. A control plane drives execution; a data plane holds the
         bytes. Each layer is independently testable and portable from laptop to cloud.</p>
+        <p class="kop"><b>매니페스트 우선.</b> 각 단계는 작은 타입드 <b>매니페스트</b>와 불변 <b>아티팩트 URI</b>만
+        주고받습니다 — 원본 프레임·텐서를 직접 넘기지 않아요. 실행을 지휘하는 컨트롤 플레인과 바이트를 담는
+        데이터 플레인이 분리돼, 각 단계를 따로 테스트하고 노트북에서 클라우드까지 그대로 옮길 수 있습니다.</p>
       </div>
       <div class="card">
         <span class="ic">②</span>
@@ -253,6 +271,9 @@
         <p>Each episode carries a <b>capability vector</b> (has_video, has_state, has_action,
         license, consent…). Its trainability level is <em>derived</em> from that vector +
         provenance + validation — never inferred from the source type alone.</p>
+        <p class="kop"><b>학습 등급은 계산된다.</b> 각 에피소드는 <b>능력 벡터</b>(영상·상태·액션 유무, 라이선스·동의 등)를
+        갖고, 학습 등급은 그 벡터 + 출처 + 검증 결과로 <b>계산</b>됩니다 — "어디서 왔는지(출처 종류)"만 보고
+        정하지 않아요. 멋져 보이는 출처라도 데이터가 받쳐주지 않으면 등급이 올라가지 않습니다.</p>
       </div>
       <div class="card">
         <span class="ic">③</span>
@@ -261,6 +282,9 @@
         writer <em>materializes</em> it into a v3 chunked dataset. Action namespaces
         (<code>robot</code>, <code>sim</code>, <code>pseudo_eef</code>, <code>latent</code>)
         stay distinct — never collapsed or upcast.</p>
+        <p class="kop"><b>라이터는 구체화기다.</b> 내부 표준 형식은 어떤 LeRobot 버전보다 표현력이 큽니다. 라이터는
+        그걸 v3 데이터셋으로 <b>구체화(materialize)</b>할 뿐이에요. 액션 네임스페이스(<code>robot·sim·pseudo_eef·latent</code>)는
+        출처별로 분리된 채 유지되고, 절대 하나로 합치거나 등급을 올리지 않습니다.</p>
       </div>
     </div>
   </div>
@@ -275,16 +299,19 @@
     <p class="lead">Source-agnostic ingest on the left; source-aware routing on the right.
     Phase 1 implements the spine end-to-end and stubs the heavy-ML stages behind their
     interfaces — so the move to Phase 2 is mechanical.</p>
+    <p class="leadko">왼쪽은 <b>출처를 가리지 않는 수집(ingest)</b>, 오른쪽은 <b>출처를 따지는 라우팅</b>입니다.
+    Phase 1은 이 척추(spine)를 끝까지 구현하고, 무거운 ML 단계(03·04)는 인터페이스만 만들어 둔
+    <b>골격(stub)</b> 상태예요 — 그래서 Phase 2로의 이행이 기계적입니다.</p>
     <div class="pipe">
-      <div class="stage impl"><span class="n">01</span><span class="t">Source Plugin</span><span class="s">implemented</span></div>
-      <div class="stage impl"><span class="n">02</span><span class="t">Normalizer</span><span class="s">implemented</span></div>
-      <div class="stage stub"><span class="n">03</span><span class="t">Perception &amp; Annotation</span><span class="s">stubbed</span></div>
-      <div class="stage stub"><span class="n">04</span><span class="t">Trajectory Grounding</span><span class="s">stubbed</span></div>
-      <div class="stage impl"><span class="n">05</span><span class="t">Validation</span><span class="s">implemented</span></div>
-      <div class="stage impl"><span class="n">06</span><span class="t">LeRobot Writer</span><span class="s">implemented</span></div>
-      <div class="stage impl"><span class="n">07</span><span class="t">Dataset Registry</span><span class="s">implemented</span></div>
-      <div class="stage impl"><span class="n">08</span><span class="t">Training Router</span><span class="s">implemented</span></div>
-      <div class="stage future"><span class="n">09</span><span class="t">Evaluation / Flywheel</span><span class="s">phase 3</span></div>
+      <div class="stage impl"><span class="n">01</span><span class="t">Source Plugin</span><span class="tk">소스 플러그인</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">02</span><span class="t">Normalizer</span><span class="tk">정규화</span><span class="s">implemented</span></div>
+      <div class="stage stub"><span class="n">03</span><span class="t">Perception &amp; Annotation</span><span class="tk">인식·주석</span><span class="s">stubbed</span></div>
+      <div class="stage stub"><span class="n">04</span><span class="t">Trajectory Grounding</span><span class="tk">궤적 추정</span><span class="s">stubbed</span></div>
+      <div class="stage impl"><span class="n">05</span><span class="t">Validation</span><span class="tk">검증</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">06</span><span class="t">LeRobot Writer</span><span class="tk">LeRobot 라이터</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">07</span><span class="t">Dataset Registry</span><span class="tk">데이터셋 레지스트리</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">08</span><span class="t">Training Router</span><span class="tk">학습 라우터</span><span class="s">implemented</span></div>
+      <div class="stage future"><span class="n">09</span><span class="t">Evaluation / Flywheel</span><span class="tk">평가·플라이휠</span><span class="s">phase 3</span></div>
     </div>
     <div class="legend">
       <i><span class="dot" style="background:var(--good)"></span> implemented · 구현됨 (이번 데모에서 실행)</i>
@@ -298,11 +325,15 @@
 <section id="run">
   <div class="wrap">
     <p class="eyebrow">Live run · the proof <span class="kob">· 실제 실행 결과</span></p>
+    <span class="runbadge">▶ PHASE 1 실행 결과 · examples/run_phase1.py · LIVE OUTPUT</span>
     <h2>One command, end-to-end, no cloud</h2>
     <p class="ko">명령어 한 줄로, 처음부터 끝까지, 클라우드 없이</p>
     <p class="lead">Everything below is real output from running the bundled Phase 1 example
     on this machine. A single <code>collected.public_web</code> video-only clip
     (<code>pick_red_cube_into_bowl</code>) flows through all six local layers.</p>
+    <p class="leadko">아래 내용은 전부 <b>Phase 1 예제(<code>examples/run_phase1.py</code>)를 실제로 실행한 결과</b>입니다 —
+    콘솔 출력, 생성된 파일 트리, JSON 메타데이터, 비용 원장 6행까지 모두 진짜 산출물이에요. 꾸며낸 화면이 아니라,
+    영상 클립 하나가 여섯 개 로컬 레이어를 통과하며 남긴 실제 기록입니다.</p>
 
     <!-- console -->
     <div class="term" style="margin-bottom:22px">
@@ -477,6 +508,9 @@ Phase 1 example complete.
     Video without trustworthy robot state/action is <em>not</em> policy-training data —
     regardless of how impressive the source looks. Our demo clip is video-only, so it lands on
     rung 1 and validation blocks the policy route.</p>
+    <p class="leadko">모든 에피소드는 능력 벡터로 <b>0~4 등급</b> 중 하나로 계산됩니다. 핵심 질문은 단 하나 —
+    <b>"믿을 수 있는 로봇 상태/액션이 있는가?"</b>예요. 신뢰할 수 있는 상태·액션이 없는 영상은, 출처가 아무리 그럴듯해도
+    정책(policy) 학습 데이터가 <em>아닙니다</em>. 이 데모 클립은 영상만 있어서 1등급에 놓이고, 검증이 정책 학습 경로를 막아요.</p>
     <div class="ladder">
       <div class="rung gate">
         <div class="lv">0</div>
@@ -502,6 +536,29 @@ Phase 1 example complete.
         <div class="lv">4</div>
         <div><div class="nm">real_robot_supervised</div><div class="ds">Validated real-robot data with known embodiment + camera calibration. Top of the ladder.</div></div>
         <div class="badge">calibrated real</div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:24px">
+      <div class="card">
+        <h3>등급은 어떻게 구분되나 <span style="color:var(--dim);font-weight:500;font-size:14px">· How levels are decided</span></h3>
+        <p>등급은 선언하는 게 아니라 <b>능력 벡터로 계산</b>됩니다. 기준은 "어떤 액션 신호가, 얼마나 믿을 수 있게 있는가":</p>
+        <ul class="lv-list">
+          <li><b>L0 archive_only</b> — 쓸 수 있는 게 없거나 법적/동의 차단 → 보관만</li>
+          <li><b>L1 video_only</b> — 영상(픽셀)만 → 표현·사전학습</li>
+          <li><b>L2 pseudo_action</b> — 상태(state)나 영상 추정(pseudo) 액션 → 의사-액션 학습</li>
+          <li><b>L3 sim_action_policy</b> — 실제 액션+상태(sim 또는 미보정 real) → 정책 사전학습</li>
+          <li><b>L4 real_robot</b> — 보정된 real(임베디먼트+카메라 캘리브레이션) → 실로봇 지도학습</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>"몰래 올리지 않는다"는 것 <span style="color:var(--dim);font-weight:500;font-size:14px">· Never silently upcast</span></h3>
+        <p>믿을 수 없는 데이터를 더 높은 등급인 척 쓰면 학습이 통째로 오염됩니다. 그래서 세 가지가 강제돼요:</p>
+        <ul class="lv-list">
+          <li>검증(validation)은 등급을 <b>내릴 수만</b> 있고, 절대 <b>올리지 못함</b></li>
+          <li>높은 등급을 주장해도 실제 <code>action</code>·<code>state</code> 파일이 디스크에 없으면 차단 — 위조된 매니페스트는 통과 못 함</li>
+          <li>액션 네임스페이스(<code>robot·sim·pseudo_eef·latent</code>)를 절대 합치지 않음 — pseudo/latent를 real 채널에 섞는 건 영상-only를 정책 데이터로 올리는 것과 <b>똑같은 위반</b></li>
+        </ul>
       </div>
     </div>
   </div>
