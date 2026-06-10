@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Video → LeRobot — Phase 1 Demo</title>
+<style>
+  :root{
+    --bg:#0b0e14; --bg2:#11151f; --panel:#151a24; --panel2:#1b2230;
+    --line:#232c3b; --line2:#2d3848;
+    --txt:#dce3ee; --muted:#8a97ab; --dim:#5f6b7e;
+    --accent:#5eead4; --accent2:#7c9cff; --warn:#f5b860; --bad:#f87171; --good:#5fd38a;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16203080,transparent),
+      radial-gradient(900px 500px at 0% 0%,#1a162a55,transparent),var(--bg);
+    color:var(--txt);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+  code,pre,.mono{font-family:var(--mono)}
+
+  /* ---- nav ---- */
+  nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);
+    background:#0b0e14cc;border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:24px;height:56px;font-size:14px}
+  nav .brand{font-weight:700;letter-spacing:.2px;color:var(--txt)}
+  nav .brand b{color:var(--accent)}
+  nav .links{margin-left:auto;display:flex;gap:22px}
+  nav .links a{color:var(--muted)}
+  nav .links a:hover{color:var(--txt);text-decoration:none}
+
+  /* ---- hero ---- */
+  header.hero{padding:84px 0 56px;border-bottom:1px solid var(--line)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.5px;
+    color:var(--accent);border:1px solid #2c4a48;background:#10201e;
+    padding:5px 12px;border-radius:999px;margin-bottom:22px}
+  h1{font-size:46px;line-height:1.08;margin:0 0 18px;font-weight:800;letter-spacing:-.5px}
+  h1 .g{background:linear-gradient(95deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .thesis{font-size:20px;color:var(--txt);max-width:760px;margin:0 0 10px}
+  .thesis b{color:var(--accent)}
+  .sub{font-size:16px;color:var(--muted);max-width:720px}
+  .herometa{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .tag{font-family:var(--mono);font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line2);background:var(--panel);padding:6px 11px;border-radius:7px}
+  .tag b{color:var(--good)}
+
+  /* ---- sections ---- */
+  section{padding:60px 0;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    color:var(--accent);margin:0 0 10px}
+  h2{font-size:30px;margin:0 0 14px;font-weight:750;letter-spacing:-.3px}
+  .lead{color:var(--muted);max-width:780px;font-size:16px;margin:0 0 30px}
+
+  /* ---- cards ---- */
+  .grid{display:grid;gap:18px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line);border-radius:14px;padding:22px}
+  .card h3{margin:0 0 8px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+  .card .ic{font-family:var(--mono);font-size:13px;color:var(--accent);margin-bottom:12px;
+    display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;
+    border:1px solid var(--line2);border-radius:9px;background:var(--panel2)}
+
+  /* ---- pipeline ---- */
+  .pipe{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin-bottom:18px}
+  .stage{flex:1 1 120px;min-width:120px;position:relative;
+    border:1px solid var(--line2);border-radius:11px;padding:13px 12px;background:var(--panel);
+    display:flex;flex-direction:column;gap:6px}
+  .stage .n{font-family:var(--mono);font-size:11px;color:var(--dim)}
+  .stage .t{font-size:13.5px;font-weight:650;line-height:1.25}
+  .stage .s{font-family:var(--mono);font-size:10.5px;letter-spacing:.4px;text-transform:uppercase}
+  .stage.impl{border-color:#2c4a48;background:linear-gradient(180deg,#10201e,#0e1a19)}
+  .stage.impl .s{color:var(--good)}
+  .stage.stub .s{color:var(--warn)}
+  .stage.future{opacity:.72}
+  .stage.future .s{color:var(--dim)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .legend i{font-style:normal;display:inline-flex;align-items:center;gap:7px}
+  .dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+  /* ---- terminal / code ---- */
+  .term{background:#080a0f;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+  .term .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;
+    background:var(--panel2);border-bottom:1px solid var(--line)}
+  .term .bar .b{width:11px;height:11px;border-radius:50%}
+  .term .bar .t{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  pre{margin:0;padding:16px 18px;overflow:auto;font-size:13px;line-height:1.65;color:#cbd5e6}
+  pre .cmd{color:var(--accent)}
+  pre .ok{color:var(--good)}
+  pre .key{color:var(--accent2)}
+  pre .mut{color:var(--dim)}
+  pre .warnv{color:var(--warn)}
+  pre .badv{color:var(--bad)}
+  pre .str{color:#a7e0c0}
+  pre .num{color:#f5b860}
+  .filetree{color:#cbd5e6}
+  .filetree .dir{color:var(--accent2)}
+  .filetree .hl{color:var(--accent)}
+
+  /* ---- ladder ---- */
+  .ladder{display:flex;flex-direction:column;gap:8px}
+  .rung{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:16px;
+    border:1px solid var(--line);border-radius:11px;padding:13px 16px;background:var(--panel)}
+  .rung .lv{font-family:var(--mono);font-weight:700;font-size:20px;color:var(--dim);text-align:center}
+  .rung .nm{font-weight:650;font-size:15px}
+  .rung .ds{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .rung .badge{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:6px;
+    border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+  .rung.active{border-color:var(--accent);background:linear-gradient(100deg,#10201e,var(--panel))}
+  .rung.active .lv{color:var(--accent)}
+  .rung.active .badge{color:var(--accent);border-color:#2c4a48;background:#0e1a19}
+  .rung.gate{opacity:.62}
+  .rung.gate .badge{color:var(--bad);border-color:#3a2630}
+
+  /* ---- verdict strip ---- */
+  .verdict{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 26px}
+  .vc{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--panel)}
+  .vc .l{font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim)}
+  .vc .v{font-size:17px;font-weight:700;margin-top:6px}
+  .vc .v.good{color:var(--good)} .vc .v.warn{color:var(--warn)} .vc .v.acc{color:var(--accent)}
+
+  /* ---- table ---- */
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--dim);font-weight:600;letter-spacing:.4px;text-transform:uppercase;font-size:11px}
+  tbody tr:hover{background:#ffffff06}
+  td .lyr{color:var(--accent)}
+  .tblwrap{border:1px solid var(--line2);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .cap{color:var(--dim);font-size:12.5px;font-family:var(--mono);margin-top:10px}
+
+  /* ---- korean subtitles ---- */
+  .ko{font-weight:600;font-size:15.5px;color:var(--accent);margin:-4px 0 18px;letter-spacing:0}
+  h1 .ko{display:block;font-size:21px;margin:14px 0 0;color:var(--muted);font-weight:650}
+  .eyebrow .kob{color:var(--muted)}
+
+  /* ---- input → output ---- */
+  .io{display:grid;grid-template-columns:1fr 52px 1fr;align-items:stretch;margin:0 0 14px}
+  .iobox{border:1px solid var(--line2);border-radius:12px;background:var(--panel);overflow:hidden}
+  .iobox .h{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 14px;background:var(--panel2);border-bottom:1px solid var(--line);
+    font-family:var(--mono);font-size:12px}
+  .iobox .h .role{color:var(--accent);letter-spacing:.5px;white-space:nowrap}
+  .iobox .h .role.out{color:var(--accent2)}
+  .iobox .h .meta{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .iobox .body{padding:16px}
+  .film{height:88px;border-radius:9px;border:1px dashed var(--line2);margin-bottom:14px;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;
+    background:repeating-linear-gradient(90deg,#0e1119,#0e1119 26px,#0a0d13 26px,#0a0d13 30px)}
+  .film .ph{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .film .ph b{color:var(--warn)}
+  .film .sz{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+  .kv{font-family:var(--mono);font-size:12px;line-height:1.95}
+  .kv .k{color:var(--dim)} .kv .v{color:#cbd5e6} .kv .vacc{color:var(--accent)}
+  .kv .vmatch{color:var(--good)}
+  .ioarrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:24px}
+  .iocallout{border:1px solid #3a3320;background:#1c1810;border-radius:10px;padding:13px 16px;
+    font-size:13.5px;line-height:1.65;color:var(--warn);margin:0 0 26px}
+  .iocallout b{color:#ffd9a0}
+  .iocallout .en{color:var(--muted)}
+
+  /* ---- roadmap ---- */
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .phase{border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--panel);position:relative}
+  .phase .ph{font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.5px}
+  .phase h3{margin:6px 0 4px;font-size:19px}
+  .phase .st{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:999px;
+    display:inline-block;margin-bottom:14px}
+  .phase.done{border-color:#2c4a48}
+  .phase.done .st{color:var(--good);background:#0e1a19;border:1px solid #2c4a48}
+  .phase.plan .st{color:var(--warn);background:#1c1810;border:1px solid #3a3320}
+  .phase ul{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px}
+  .phase li{margin:5px 0}
+  .phase .arrow{position:absolute;right:-13px;top:50%;color:var(--line2);font-size:20px;z-index:2}
+
+  footer{padding:46px 0 70px;color:var(--dim);font-size:13px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+  .note{font-family:var(--mono)}
+
+  @media(max-width:880px){
+    .g3,.g2,.verdict,.road{grid-template-columns:1fr}
+    h1{font-size:34px}.thesis{font-size:18px}
+    .phase .arrow{display:none}
+    .rung{grid-template-columns:42px 1fr;}.rung .badge{grid-column:2;justify-self:start}
+    .io{grid-template-columns:1fr}
+    .ioarrow{transform:rotate(90deg);padding:8px 0}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">Robot Video <b>→</b> LeRobot</span>
+    <span class="links">
+      <a href="#what">What it is</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#run">Live run</a>
+      <a href="#ladder">Trainability</a>
+      <a href="#roadmap">Roadmap</a>
+    </span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="pill">PHASE 1 · LOCAL MVP · RAN END-TO-END</span>
+    <h1>Turn <span class="g">any robot video</span><br>into trainable datasets.<span class="ko">어떤 로봇 영상이든, 학습 가능한 데이터셋으로</span></h1>
+    <p class="thesis"><b>Ingest is source-agnostic; training is source-aware.</b></p>
+    <p class="sub">A manifest-first pipeline that ingests heterogeneous robot-demonstration
+    video — web clips, generated rollouts, simulator traces, real-robot demos — and
+    materializes a single LeRobot v3 dataset format. How each clip may be <em>used</em> is
+    computed from what it actually contains, never assumed from where it came from.</p>
+    <div class="herometa">
+      <span class="tag"><b>✓</b> 6/6 pipeline layers ran</span>
+      <span class="tag"><b>✓</b> 1 dataset materialized</span>
+      <span class="tag"><b>✓</b> 6 cost events ledgered</span>
+      <span class="tag"><b>✓</b> validation passed · level 1</span>
+      <span class="tag">no GPU · no cloud · ~instant</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ WHAT IT IS ============ -->
+<section id="what">
+  <div class="wrap">
+    <p class="eyebrow">What it is <span class="kob">· 개요</span></p>
+    <h2>Three ideas hold the whole system up</h2>
+    <p class="ko">이 시스템을 떠받치는 세 가지 핵심 아이디어</p>
+    <p class="lead">Every source — a YouTube clip, a world-model rollout, a sim trace, a
+    teleop demo — emits the <em>same</em> canonical record. Differences in trustworthiness
+    travel as metadata, not as separate code paths.</p>
+    <div class="grid g3">
+      <div class="card">
+        <span class="ic">①</span>
+        <h3>Manifest-first</h3>
+        <p>Layers exchange small, typed <b>manifests</b> plus immutable <b>artifact URIs</b> —
+        never raw frames or tensors. A control plane drives execution; a data plane holds the
+        bytes. Each layer is independently testable and portable from laptop to cloud.</p>
+      </div>
+      <div class="card">
+        <span class="ic">②</span>
+        <h3>Trainability is computed</h3>
+        <p>Each episode carries a <b>capability vector</b> (has_video, has_state, has_action,
+        license, consent…). Its trainability level is <em>derived</em> from that vector +
+        provenance + validation — never inferred from the source type alone.</p>
+      </div>
+      <div class="card">
+        <span class="ic">③</span>
+        <h3>The writer is a materializer</h3>
+        <p>The internal canonical form stays more expressive than any LeRobot version. The
+        writer <em>materializes</em> it into a v3 chunked dataset. Action namespaces
+        (<code>robot</code>, <code>sim</code>, <code>pseudo_eef</code>, <code>latent</code>)
+        stay distinct — never collapsed or upcast.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section id="pipeline">
+  <div class="wrap">
+    <p class="eyebrow">The pipeline <span class="kob">· 파이프라인</span></p>
+    <h2>Nine stages, one canonical record</h2>
+    <p class="ko">아홉 단계, 하나의 표준 레코드</p>
+    <p class="lead">Source-agnostic ingest on the left; source-aware routing on the right.
+    Phase 1 implements the spine end-to-end and stubs the heavy-ML stages behind their
+    interfaces — so the move to Phase 2 is mechanical.</p>
+    <div class="pipe">
+      <div class="stage impl"><span class="n">01</span><span class="t">Source Plugin</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">02</span><span class="t">Normalizer</span><span class="s">implemented</span></div>
+      <div class="stage stub"><span class="n">03</span><span class="t">Perception &amp; Annotation</span><span class="s">stubbed</span></div>
+      <div class="stage stub"><span class="n">04</span><span class="t">Trajectory Grounding</span><span class="s">stubbed</span></div>
+      <div class="stage impl"><span class="n">05</span><span class="t">Validation</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">06</span><span class="t">LeRobot Writer</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">07</span><span class="t">Dataset Registry</span><span class="s">implemented</span></div>
+      <div class="stage impl"><span class="n">08</span><span class="t">Training Router</span><span class="s">implemented</span></div>
+      <div class="stage future"><span class="n">09</span><span class="t">Evaluation / Flywheel</span><span class="s">phase 3</span></div>
+    </div>
+    <div class="legend">
+      <i><span class="dot" style="background:var(--good)"></span> implemented · 구현됨 (이번 데모에서 실행)</i>
+      <i><span class="dot" style="background:var(--warn)"></span> stubbed · 골격만 (실동작 미구현, Phase 1은 GPU 없음)</i>
+      <i><span class="dot" style="background:var(--dim)"></span> later phase · 이후 단계</i>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIVE RUN ============ -->
+<section id="run">
+  <div class="wrap">
+    <p class="eyebrow">Live run · the proof <span class="kob">· 실제 실행 결과</span></p>
+    <h2>One command, end-to-end, no cloud</h2>
+    <p class="ko">명령어 한 줄로, 처음부터 끝까지, 클라우드 없이</p>
+    <p class="lead">Everything below is real output from running the bundled Phase 1 example
+    on this machine. A single <code>collected.public_web</code> video-only clip
+    (<code>pick_red_cube_into_bowl</code>) flows through all six local layers.</p>
+
+    <!-- console -->
+    <div class="term" style="margin-bottom:22px">
+      <div class="bar"><span class="b" style="background:#f87171"></span><span class="b" style="background:#f5b860"></span><span class="b" style="background:#5fd38a"></span><span class="t">zsh — robotis-convivium</span></div>
+<pre><span class="cmd">$ uv run python examples/run_phase1.py phase1_output</span>
+
+Phase 1 example complete.
+  dataset folder : <span class="mut">…/phase1_output/datasets/</span>pick_red_cube_into_bowl
+  manifest(s)    : <span class="mut">…/phase1_output/canonical/</span>ep_0001.json
+  cost ledger    : <span class="mut">…/phase1_output/</span>cost_ledger.db <span class="ok">(6 CostEvent rows)</span>
+  registry       : <span class="mut">…/phase1_output/</span>registry.db
+  trainability   : <span class="ok">level 1 (validation passed)</span>
+</pre>
+    </div>
+
+    <!-- verdict strip -->
+    <div class="verdict">
+      <div class="vc"><div class="l">Trainability</div><div class="v acc">Level 1</div></div>
+      <div class="vc"><div class="l">Validation</div><div class="v good">passed</div></div>
+      <div class="vc"><div class="l">Legal status</div><div class="v good">cleared</div></div>
+      <div class="vc"><div class="l">Policy training</div><div class="v warn">blocked</div></div>
+    </div>
+
+    <!-- actual input → output -->
+    <h3 style="font-size:17px;margin:8px 0 4px">실제 인풋 → 결과물 · the actual bytes</h3>
+    <p class="cap" style="margin-bottom:14px">Phase 1 stores the clip as an immutable artifact and copies it
+    byte-for-byte into the LeRobot layout — same SHA-256 going in and coming out. 영상을 디코딩하지 않고
+    바이트 그대로 흘려보내는 게 Phase 1의 계약이에요.</p>
+    <div class="io">
+      <div class="iobox">
+        <div class="h"><span class="role">▸ INPUT · 입력</span><span class="meta">artifacts/ep_0001/video.mp4</span></div>
+        <div class="body">
+          <div class="film"><span class="ph">▦ <b>FAKE-MP4-PAYLOAD</b></span><span class="sz">placeholder · 디코딩 가능한 영상이 아님</span></div>
+          <div class="kv">
+            <div><span class="k">size&nbsp;&nbsp;&nbsp;</span><span class="v">18 bytes</span></div>
+            <div><span class="k">type&nbsp;&nbsp;&nbsp;</span><span class="v">video/mp4</span></div>
+            <div><span class="k">hex&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="v">00 46 41 4b 45 2d 4d 50 34 2d 50 41 59 4c 4f 41 44 00</span></div>
+            <div><span class="k">ascii&nbsp;&nbsp;</span><span class="v">\x00FAKE-MP4-PAYLOAD\x00</span></div>
+            <div><span class="k">sha256&nbsp;</span><span class="vacc">2f2aaddd…22189265b</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ioarrow">→</div>
+      <div class="iobox">
+        <div class="h"><span class="role out">▸ OUTPUT · 결과물</span><span class="meta">datasets/…/videos/ep_0001.mp4</span></div>
+        <div class="body">
+          <div class="film"><span class="ph">▦ <b>identical copy</b></span><span class="sz">byte-for-byte · 동일 복사본</span></div>
+          <div class="kv">
+            <div><span class="k">size&nbsp;&nbsp;&nbsp;</span><span class="v">18 bytes</span></div>
+            <div><span class="k">layout&nbsp;</span><span class="v">LeRobot v3 · videos/ data/ meta/</span></div>
+            <div><span class="k">meta&nbsp;&nbsp;&nbsp;</span><span class="v">info · source_manifest · validation_report · modality</span></div>
+            <div><span class="k">frames&nbsp;</span><span class="v">60 (fps 30 × 2.0s, 추정)</span></div>
+            <div><span class="k">sha256&nbsp;</span><span class="vmatch">2f2aaddd…22189265b ✓ match</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="iocallout">⚠ <b>왜 영상이 재생되지 않나요?</b> Phase 1은 영상을 <b>디코딩하지 않습니다</b> — 데이터 흐름(계약)을
+    증명하는 단계라 18바이트 placeholder를 사용해요. 실제 프레임은 진짜 영상 파일을 넣거나, Phase 2의
+    perception·grounding 단계가 켜지면 채워집니다.
+    <br><span class="en">Phase 1 does no decoding; it proves the contract end-to-end with a placeholder. Real frames
+    arrive once you ingest a real source file or the Phase 2 perception/grounding stages turn on.</span></div>
+
+    <div class="grid g2" style="margin-bottom:22px">
+      <!-- file tree -->
+      <div class="term">
+        <div class="bar"><span class="b" style="background:#f87171"></span><span class="b" style="background:#f5b860"></span><span class="b" style="background:#5fd38a"></span><span class="t">phase1_output/ — generated artifacts</span></div>
+<pre class="filetree">phase1_output/
+├─ <span class="dir">artifacts/</span>ep_0001/
+│   ├─ video.mp4              <span class="mut"># immutable payload</span>
+│   └─ video.mp4.provenance.json
+├─ <span class="dir">canonical/</span>
+│   └─ <span class="hl">ep_0001.json</span>            <span class="mut"># persisted manifest</span>
+├─ <span class="dir">datasets/</span>pick_red_cube_into_bowl/
+│   ├─ <span class="dir">videos/</span>ep_0001.mp4
+│   ├─ <span class="dir">data/</span>                  <span class="mut"># state/action parquet</span>
+│   └─ <span class="dir">meta/</span>
+│       ├─ info.json
+│       ├─ source_manifest.json
+│       ├─ validation_report.json
+│       └─ modality.json
+├─ cost_ledger.db             <span class="mut"># SQLite, 6 rows</span>
+└─ registry.db                <span class="mut"># SQLite, 1 row</span>
+</pre>
+      </div>
+
+      <!-- validation report -->
+      <div class="term">
+        <div class="bar"><span class="b" style="background:#f87171"></span><span class="b" style="background:#f5b860"></span><span class="b" style="background:#5fd38a"></span><span class="t">meta/validation_report.json</span></div>
+<pre>{
+  <span class="key">"episode_id"</span>: <span class="str">"ep_0001"</span>,
+  <span class="key">"passed"</span>: <span class="ok">true</span>,
+  <span class="key">"trainability_level"</span>: <span class="num">1</span>,
+  <span class="key">"legal_status"</span>: <span class="str">"cleared"</span>,
+  <span class="key">"quality_score"</span>: <span class="num">1.0</span>,
+  <span class="key">"recommended_uses"</span>: [<span class="str">"representation"</span>],
+  <span class="key">"blocked_uses"</span>: [<span class="badv">"policy_training"</span>],
+  <span class="key">"reason_codes"</span>: [<span class="warnv">"VIDEO_ONLY_NOT_TRAINABLE"</span>],
+  <span class="key">"errors"</span>: [],
+  <span class="key">"warnings"</span>: []
+}
+</pre>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:22px">
+      <!-- capability vector -->
+      <div class="term">
+        <div class="bar"><span class="b" style="background:#f87171"></span><span class="b" style="background:#f5b860"></span><span class="b" style="background:#5fd38a"></span><span class="t">source_manifest.json → capability_vector</span></div>
+<pre>{
+  <span class="key">"source_type"</span>: <span class="str">"collected.public_web"</span>,
+  <span class="key">"source_family"</span>: <span class="str">"collected"</span>,
+  <span class="key">"fps"</span>: <span class="num">30.0</span>, <span class="key">"duration_sec"</span>: <span class="num">2.0</span>,
+  <span class="key">"capability_vector"</span>: {
+    <span class="key">"has_video"</span>:    <span class="ok">true</span>,
+    <span class="key">"has_state"</span>:    <span class="badv">false</span>,
+    <span class="key">"has_action"</span>:   <span class="badv">false</span>,
+    <span class="key">"has_language"</span>: <span class="badv">false</span>,
+    <span class="key">"license_status"</span>: <span class="str">"known-permissive"</span>,
+    <span class="key">"consent_status"</span>: <span class="str">"not_applicable"</span>
+  }
+}
+</pre>
+      </div>
+
+      <!-- info + modality -->
+      <div class="term">
+        <div class="bar"><span class="b" style="background:#f87171"></span><span class="b" style="background:#f5b860"></span><span class="b" style="background:#5fd38a"></span><span class="t">meta/info.json &amp; modality.json</span></div>
+<pre>{ <span class="mut">// info.json — LeRobot v3 header</span>
+  <span class="key">"codebase_version"</span>: <span class="str">"v3.0"</span>,
+  <span class="key">"dataset_name"</span>: <span class="str">"pick_red_cube_into_bowl"</span>,
+  <span class="key">"fps"</span>: <span class="num">30.0</span>, <span class="key">"total_episodes"</span>: <span class="num">1</span>,
+  <span class="key">"total_frames"</span>: <span class="num">60</span>, <span class="key">"robot_type"</span>: <span class="mut">null</span>
+}
+{ <span class="mut">// modality.json — only routed channels</span>
+  <span class="key">"video"</span>: [<span class="str">"observation.images.front"</span>],
+  <span class="key">"action"</span>: {}   <span class="mut">// video-only → no action exposed</span>
+}
+</pre>
+      </div>
+    </div>
+
+    <!-- cost ledger table -->
+    <h3 style="font-size:17px;margin:8px 0 4px">Cost ledger — every layer leaves a row</h3>
+    <p class="cap" style="margin-bottom:12px">Even with no GPU and no cloud, each layer run appends a
+    <code>CostEvent</code>. The shape is identical in Phase 2/3 — only the numbers change.</p>
+    <div class="tblwrap" style="margin-bottom:10px">
+      <table>
+        <thead><tr><th>#</th><th>layer</th><th>episodes</th><th>gpu_s</th><th>bytes_written</th><th>est_cost</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><span class="lyr">ingest</span></td><td>1</td><td>0.0</td><td>18</td><td>$0.00</td></tr>
+          <tr><td>2</td><td><span class="lyr">normalize</span></td><td>1</td><td>0.0</td><td>0</td><td>$0.00</td></tr>
+          <tr><td>3</td><td><span class="lyr">persist</span></td><td>1</td><td>0.0</td><td>0</td><td>$0.00</td></tr>
+          <tr><td>4</td><td><span class="lyr">validation</span></td><td>1</td><td>0.0</td><td>0</td><td>$0.00</td></tr>
+          <tr><td>5</td><td><span class="lyr">lerobot_writer</span></td><td>1</td><td>0.0</td><td>0</td><td>$0.00</td></tr>
+          <tr><td>6</td><td><span class="lyr">registry</span></td><td>1</td><td>0.0</td><td>0</td><td>$0.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">run_id <code>run_90a65773d0e4</code> · parent of all 6 events · source_family
+    <code>collected</code> · registry row → <code>(pick_red_cube_into_bowl, ep_0001, level 1)</code></p>
+  </div>
+</section>
+
+<!-- ============ LADDER ============ -->
+<section id="ladder">
+  <div class="wrap">
+    <p class="eyebrow">The trainability ladder <span class="kob">· 학습 등급 사다리</span></p>
+    <h2>The central invariant: never silently upcast</h2>
+    <p class="ko">핵심 불변 규칙: 절대 몰래 등급을 올리지 않는다</p>
+    <p class="lead">Every episode resolves to a level 0–4, computed from its capability vector.
+    Video without trustworthy robot state/action is <em>not</em> policy-training data —
+    regardless of how impressive the source looks. Our demo clip is video-only, so it lands on
+    rung 1 and validation blocks the policy route.</p>
+    <div class="ladder">
+      <div class="rung gate">
+        <div class="lv">0</div>
+        <div><div class="nm">archive_only</div><div class="ds">Nothing usable for training, or a hard legal/consent block. Stored, not trained.</div></div>
+        <div class="badge">legal gate</div>
+      </div>
+      <div class="rung active">
+        <div class="lv">1</div>
+        <div><div class="nm">video_only_pretraining &nbsp;←&nbsp; this episode</div><div class="ds">Pixels only. Good for representation / world-model pretraining. Policy training blocked.</div></div>
+        <div class="badge">recommended: representation</div>
+      </div>
+      <div class="rung">
+        <div class="lv">2</div>
+        <div><div class="nm">pseudo_action_training</div><div class="ds">Video-estimated (pseudo) actions or state present. Usable for pseudo-action training.</div></div>
+        <div class="badge">pseudo / state</div>
+      </div>
+      <div class="rung">
+        <div class="lv">3</div>
+        <div><div class="nm">sim_action_policy_pretraining</div><div class="ds">Real action + state present (sim or uncalibrated real). Policy pretraining eligible.</div></div>
+        <div class="badge">needs action + state</div>
+      </div>
+      <div class="rung">
+        <div class="lv">4</div>
+        <div><div class="nm">real_robot_supervised</div><div class="ds">Validated real-robot data with known embodiment + camera calibration. Top of the ladder.</div></div>
+        <div class="badge">calibrated real</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap">
+  <div class="wrap">
+    <p class="eyebrow">Where it's going <span class="kob">· 앞으로의 방향</span></p>
+    <h2>Same contracts, three phases</h2>
+    <p class="ko">동일한 계약(인터페이스), 세 단계의 로드맵</p>
+    <p class="lead">The layer boundaries already speak manifests + artifact URIs. Each phase is a
+    mechanical step up from the last — swap the filesystem for S3, the loop for a workflow engine,
+    the SQLite ledger for Athena. The contracts don't change.</p>
+    <div class="road">
+      <div class="phase done">
+        <div class="ph">PHASE 1</div>
+        <h3>Local MVP</h3>
+        <span class="st">● SHIPPED — ran in this demo</span>
+        <ul>
+          <li>Filesystem artifact store</li>
+          <li>SQLite registry + cost ledger</li>
+          <li>Single CLI, sequential</li>
+          <li>No queues, no cloud, no GPU</li>
+          <li>4 source plugins + validation gates</li>
+        </ul>
+        <span class="arrow">→</span>
+      </div>
+      <div class="phase plan">
+        <div class="ph">PHASE 2</div>
+        <h3>AWS Batch</h3>
+        <span class="st">○ DESIGNED</span>
+        <ul>
+          <li>S3 artifact store</li>
+          <li>Step Functions (Standard)</li>
+          <li>AWS Batch compute</li>
+          <li>SQS fan-out / DLQ</li>
+          <li>Athena / Glue + CloudWatch</li>
+        </ul>
+        <span class="arrow">→</span>
+      </div>
+      <div class="phase plan">
+        <div class="ph">PHASE 3</div>
+        <h3>Production Flywheel</h3>
+        <span class="st">○ DESIGNED</span>
+        <ul>
+          <li>lakeFS + Iceberg data versioning</li>
+          <li>HF Hub + Weights &amp; Biases</li>
+          <li>QuickSight + React/FastAPI dashboard</li>
+          <li>EventBridge Scheduler</li>
+          <li>Evaluation &amp; feedback flywheel</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="note">Robot Video → LeRobot · Phase 1 MVP · generated from a real end-to-end run</span>
+    <span class="note">$ uv run python examples/run_phase1.py &nbsp;·&nbsp; $ uv run pytest</span>
+  </div>
+</footer>
+
+</body>
+</html>
