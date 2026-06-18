@@ -207,6 +207,94 @@
     .io{grid-template-columns:1fr}
     .ioarrow{transform:rotate(90deg);padding:8px 0}
   }
+  .rung.active{opacity:1}
+
+  /* ===== animated pipeline belt (bp-*) ===== */
+  :root{
+    --s-source:#7c9cff; --s-normalize:#5eead4; --s-perceive:#f5b860; --s-ground:#f5b860;
+    --s-validate:#5fd38a; --s-writer:#5eead4; --s-registry:#7c9cff; --s-router:#a78bfa; --s-eval:#5f6b7e;
+    --lv0:#f87171; --lv1:#f5b860; --lv2:#7c9cff; --lv3:#5eead4; --lv4:#5fd38a;
+  }
+  .bp{position:relative;background:var(--panel);border:1px solid var(--line2);border-radius:14px;
+    padding:26px 22px 18px;margin:6px 0 18px;overflow-x:auto}
+  .bp-track{min-width:840px}
+  .bp-stations{display:flex;gap:9px;flex-wrap:nowrap}
+  .bp-station{flex:1 1 0;min-width:0;background:var(--bg2);border:1px solid var(--line);
+    border-radius:11px;padding:12px 7px 13px;text-align:center;position:relative;
+    transition:border-color .3s,box-shadow .3s,transform .3s}
+  .bp-station .bp-ic{width:34px;height:34px;margin:0 auto 7px;border-radius:9px;display:flex;
+    align-items:center;justify-content:center;font-size:17px;color:var(--scol);
+    background:var(--panel2);border:1px solid var(--line2);transition:transform .3s,box-shadow .3s,border-color .3s}
+  .bp-station .bp-nm{font-size:12.5px;font-weight:650;line-height:1.15}
+  .bp-station .bp-ko{font-size:10px;color:var(--dim);margin-top:1px}
+  .bp-station .bp-st{font-family:var(--mono);font-size:8.5px;letter-spacing:.4px;text-transform:uppercase;
+    margin-top:5px;color:var(--dim)}
+  .bp-station[data-status=impl] .bp-st{color:var(--good)}
+  .bp-station[data-status=stub] .bp-st{color:var(--warn)}
+  .bp-station[data-status=future]{opacity:.55}
+  .bp-station.active{border-color:var(--scol);box-shadow:0 0 0 1px var(--scol),0 0 24px -6px var(--scol);transform:translateY(-3px)}
+  .bp-station.active .bp-ic{transform:scale(1.12);border-color:var(--scol);box-shadow:0 0 16px -3px var(--scol)}
+  .bp-station.active .bp-nm{color:var(--scol)}
+  .bp-station.blocked{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad),0 0 24px -5px var(--bad)}
+  .bp-station.blocked .bp-ic{border-color:var(--bad);color:var(--bad);box-shadow:0 0 16px -3px var(--bad)}
+  .bp-station.blocked .bp-nm{color:var(--bad)}
+
+  .bp-beltwrap{position:relative;height:88px;margin-top:22px}
+  .bp-belt{position:absolute;left:0;right:0;top:44px;height:24px;
+    background:repeating-linear-gradient(90deg,#1b2230 0,#1b2230 18px,#283042 18px,#283042 22px);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);background-size:40px 100%;overflow:hidden}
+  .bp-belt.run{animation:bpbelt 1.4s linear infinite}
+  @keyframes bpbelt{to{background-position:40px 0}}
+  .bp-card{position:absolute;top:4px;left:0;width:150px;
+    background:linear-gradient(180deg,#1c2330,var(--bg2));border:1px solid var(--cardcol,var(--line2));
+    border-radius:10px;padding:8px 11px;box-shadow:0 8px 22px -8px #000c,0 0 18px -6px var(--cardcol,transparent);
+    transition:left .7s cubic-bezier(.65,.05,.36,1),border-color .4s,box-shadow .4s;z-index:4}
+  .bp-card .bp-ctitle{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;font-family:var(--mono)}
+  .bp-card .bp-cdot{width:8px;height:8px;border-radius:50%;background:var(--cardcol,var(--muted));flex:none}
+  .bp-card .bp-clabel{margin-top:6px;font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:20px;
+    display:inline-block;font-weight:600;border:1px solid var(--lblcol,var(--line2));color:var(--lblcol,var(--muted));
+    background:var(--lblbg,transparent);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bp-card.done{animation:bppop .5s ease}
+  @keyframes bppop{0%{transform:scale(1)}40%{transform:scale(1.13)}100%{transform:scale(1)}}
+
+  .bp-routes{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+  .bp-route{flex:1 1 0;min-width:140px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    background:var(--panel);opacity:.4;transition:opacity .3s,border-color .3s,box-shadow .3s}
+  .bp-route .bp-rh{font-family:var(--mono);font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim)}
+  .bp-route .bp-rn{font-size:13px;font-weight:650;margin-top:3px;color:var(--rcol)}
+  .bp-route .bp-rk{font-size:10.5px;color:var(--muted);margin-top:1px}
+  .bp-route.lit{opacity:1;border-color:var(--rcol);box-shadow:0 0 18px -6px var(--rcol)}
+
+  .bp-caption{background:linear-gradient(180deg,#141a22,#11161d);border:1px solid var(--line);
+    border-left:4px solid var(--capcol,var(--line2));border-radius:12px;padding:14px 18px;min-height:64px;
+    display:flex;align-items:center;gap:13px;transition:border-color .3s;margin-bottom:16px}
+  .bp-caption .bp-step{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700;
+    border:1px solid var(--line2);border-radius:8px;padding:6px 9px;flex:none;min-width:48px;text-align:center}
+  .bp-caption .bp-ctext{font-size:14.5px;line-height:1.55}
+  .bp-caption .bp-ctext b{color:var(--capcol,var(--txt))}
+  .bp-caption code{font-family:var(--mono);font-size:12px;color:#d2a8ff;background:#ffffff10;padding:1px 5px;border-radius:5px}
+
+  .bp-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .bp-btn{background:var(--bg2);color:var(--txt);border:1px solid var(--line2);border-radius:9px;
+    padding:8px 14px;font-size:13.5px;cursor:pointer;font-family:var(--sans);
+    transition:background .2s,border-color .2s,transform .1s}
+  .bp-btn:hover{background:var(--panel2);border-color:var(--line2)}
+  .bp-btn:active{transform:scale(.96)}
+  .bp-btn.primary{background:#10312b;border-color:#2c4a48;color:var(--accent)}
+  .bp-sources{display:flex;gap:6px;flex-wrap:wrap}
+  .bp-src{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:20px;
+    padding:6px 11px;font-size:11.5px;cursor:pointer;font-family:var(--mono);transition:all .2s}
+  .bp-src:hover{color:var(--txt);border-color:var(--line2)}
+  .bp-src.on{color:var(--scol);border-color:var(--scol);background:#ffffff08}
+  .bp-speed{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;margin-left:auto}
+  .bp-speed input{accent-color:var(--accent)}
+  .bp-legend{color:var(--muted);font-size:12.5px;line-height:1.7;margin:2px 0 0}
+  .bp-legend b{color:var(--txt)}
+
+  @media(max-width:880px){
+    .bp-route{min-width:calc(50% - 6px)}
+    .bp-speed{margin-left:0}
+  }
 </style>
 </head>
 <body>
@@ -215,8 +303,8 @@
   <div class="wrap">
     <span class="brand">Robot Video <b>→</b> LeRobot</span>
     <span class="links">
+      <a href="#belt">Live pipeline</a>
       <a href="#what">What it is</a>
-      <a href="#pipeline">Pipeline</a>
       <a href="#run">Live run</a>
       <a href="#ladder">Trainability</a>
       <a href="#roadmap">Roadmap</a>
@@ -242,6 +330,53 @@
     </div>
   </div>
 </header>
+
+<!-- ============ ANIMATED PIPELINE BELT ============ -->
+<section id="belt">
+  <div class="wrap">
+    <p class="eyebrow">Watch it move <span class="kob">· 파이프라인 실시간</span></p>
+    <h2>One episode, nine stages, a computed verdict</h2>
+    <p class="ko">에피소드 하나가 아홉 단계를 지나 학습 등급을 받기까지</p>
+    <p class="lead">Each episode rides the belt left to right. Ingest is the same for every
+    source; at <b>Validation</b> a trainability level is <em>computed</em>, and the
+    <b>Router</b> sends it where that level allows. Watch a video-only clip get blocked, and a
+    real-robot demo reach the top of the ladder.</p>
+    <p class="leadko">에피소드 하나가 벨트를 따라 흐릅니다. <b>수집은 출처를 가리지 않지만</b>,
+    <b>검증</b>에서 학습 등급이 <b>계산</b>되고 <b>라우터</b>가 그 등급이 허용하는 곳으로만 보냅니다 —
+    영상만 있는 클립은 차단되고, 실로봇 시연은 사다리 꼭대기에 닿습니다. ▶를 눌러보세요.</p>
+
+    <div class="bp">
+      <div class="bp-track">
+        <div class="bp-stations" id="bpStations"></div>
+        <div class="bp-beltwrap">
+          <div class="bp-belt" id="bpBelt"></div>
+          <div class="bp-card" id="bpCard">
+            <div class="bp-ctitle"><span class="bp-cdot"></span><span id="bpCardTitle">idle · 대기</span></div>
+            <div class="bp-clabel" id="bpCardLabel">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="bp-routes" id="bpRoutes"></div>
+    </div>
+
+    <div class="bp-caption" id="bpCaption">
+      <div class="bp-step" id="bpStep">0 / 0</div>
+      <div class="bp-ctext" id="bpCapText">▶ Press play — or pick a source — to send an episode down the belt. ▶ 재생을 누르거나 소스를 골라 에피소드를 흘려보내세요.</div>
+    </div>
+
+    <div class="bp-controls">
+      <button class="bp-btn primary" id="bpPlay">▶ Play · 재생</button>
+      <button class="bp-btn" id="bpNext">⏭ Step</button>
+      <button class="bp-btn" id="bpReset">↺ Reset</button>
+      <div class="bp-sources" id="bpSources"></div>
+      <div class="bp-speed">Speed <input type="range" id="bpSpeed" min="600" max="2800" value="1500" step="100"></div>
+    </div>
+    <p class="bp-legend">The belt cycles through four sources — <b>collected.public_web</b> (×2: one
+    permissive, one license-blocked), <b>simulated</b>, and <b>real</b> — so you see the same pipe
+    resolve to different rungs. Validation can only ever <b>downgrade</b>; it never silently upcasts.
+    네 가지 소스를 순환하며, 같은 파이프라인이 서로 다른 등급으로 귀결되는 걸 보여줍니다.</p>
+  </div>
+</section>
 
 <!-- ============ WHAT IT IS ============ -->
 <section id="what">
@@ -511,28 +646,30 @@ Phase 1 example complete.
     <p class="leadko">모든 에피소드는 능력 벡터로 <b>0~4 등급</b> 중 하나로 계산됩니다. 핵심 질문은 단 하나 —
     <b>"믿을 수 있는 로봇 상태/액션이 있는가?"</b>예요. 신뢰할 수 있는 상태·액션이 없는 영상은, 출처가 아무리 그럴듯해도
     정책(policy) 학습 데이터가 <em>아닙니다</em>. 이 데모 클립은 영상만 있어서 1등급에 놓이고, 검증이 정책 학습 경로를 막아요.</p>
+    <p class="cap" style="margin:-14px 0 16px">The belt above lands each episode on one of these rungs in real time — the lit
+    rung mirrors the running pipeline. 위 벨트가 에피소드를 실시간으로 한 등급에 올려놓습니다.</p>
     <div class="ladder">
-      <div class="rung gate">
+      <div class="rung gate" id="rung0">
         <div class="lv">0</div>
         <div><div class="nm">archive_only</div><div class="ds">Nothing usable for training, or a hard legal/consent block. Stored, not trained.</div></div>
         <div class="badge">legal gate</div>
       </div>
-      <div class="rung active">
+      <div class="rung" id="rung1">
         <div class="lv">1</div>
-        <div><div class="nm">video_only_pretraining &nbsp;←&nbsp; this episode</div><div class="ds">Pixels only. Good for representation / world-model pretraining. Policy training blocked.</div></div>
+        <div><div class="nm">video_only_pretraining</div><div class="ds">Pixels only. Good for representation / world-model pretraining. Policy training blocked.</div></div>
         <div class="badge">recommended: representation</div>
       </div>
-      <div class="rung">
+      <div class="rung" id="rung2">
         <div class="lv">2</div>
         <div><div class="nm">pseudo_action_training</div><div class="ds">Video-estimated (pseudo) actions or state present. Usable for pseudo-action training.</div></div>
         <div class="badge">pseudo / state</div>
       </div>
-      <div class="rung">
+      <div class="rung" id="rung3">
         <div class="lv">3</div>
         <div><div class="nm">sim_action_policy_pretraining</div><div class="ds">Real action + state present (sim or uncalibrated real). Policy pretraining eligible.</div></div>
         <div class="badge">needs action + state</div>
       </div>
-      <div class="rung">
+      <div class="rung" id="rung4">
         <div class="lv">4</div>
         <div><div class="nm">real_robot_supervised</div><div class="ds">Validated real-robot data with known embodiment + camera calibration. Top of the ladder.</div></div>
         <div class="badge">calibrated real</div>
@@ -622,6 +759,219 @@ Phase 1 example complete.
     <span class="note">$ uv run python examples/run_phase1.py &nbsp;·&nbsp; $ uv run pytest</span>
   </div>
 </footer>
+
+<script>
+(function(){
+  // ---------- stages (9) ----------
+  const STAGES = [
+    {id:'source',    name:'Source',     ko:'소스',     ic:'◉', col:'--s-source',    status:'impl'},
+    {id:'normalize', name:'Normalizer', ko:'정규화',   ic:'▤', col:'--s-normalize', status:'impl'},
+    {id:'perceive',  name:'Perception', ko:'인식',     ic:'◎', col:'--s-perceive',  status:'stub'},
+    {id:'ground',    name:'Grounding',  ko:'궤적',     ic:'⟿', col:'--s-ground',    status:'stub'},
+    {id:'validate',  name:'Validation', ko:'검증',     ic:'✓', col:'--s-validate',  status:'impl'},
+    {id:'writer',    name:'Writer',     ko:'라이터',   ic:'⎘', col:'--s-writer',    status:'impl'},
+    {id:'registry',  name:'Registry',   ko:'레지스트리',ic:'≣', col:'--s-registry',  status:'impl'},
+    {id:'router',    name:'Router',     ko:'라우터',   ic:'⤳', col:'--s-router',    status:'impl'},
+    {id:'eval',      name:'Eval',       ko:'평가',     ic:'∞', col:'--s-eval',      status:'future'},
+  ];
+  const sIdx = Object.fromEntries(STAGES.map((s,i)=>[s.id,i]));
+
+  const LEVELS = {
+    0:{nm:'archive_only',                 col:'--lv0'},
+    1:{nm:'video_only_pretraining',       col:'--lv1'},
+    2:{nm:'pseudo_action_training',       col:'--lv2'},
+    3:{nm:'sim_action_policy_pretraining',col:'--lv3'},
+    4:{nm:'real_robot_supervised',        col:'--lv4'},
+  };
+  const ROUTES = [
+    {id:'archive',  name:'archive_only',          ko:'보관만',           col:'--lv0'},
+    {id:'pretrain', name:'pretraining-only',      ko:'표현·사전학습',    col:'--lv1'},
+    {id:'sim',      name:'sim policy-pretrain',   ko:'sim 정책 사전학습',col:'--lv3'},
+    {id:'policy',   name:'full supervised policy',ko:'실로봇 지도학습',  col:'--lv4'},
+  ];
+  const routeById = Object.fromEntries(ROUTES.map(r=>[r.id,r]));
+
+  // ---------- episodes (the four scenarios) ----------
+  const EPISODES = [
+    { key:'web', title:'collected.public_web', stcol:'--s-source', hasAction:false, level:1, route:'pretrain', blocked:false,
+      capSource:'A public-web clip enters as <b>collected.public_web</b> — <b>video only</b>, license known-permissive. 공개 영상이 들어옵니다 — 영상만, 라이선스 허용.',
+      capGround:'No reliable action to recover from raw pixels (grounding is a Phase-2 stub). 원본 영상에서 복원할 액션 신호가 없습니다.',
+      capValidate:'Capability = video-only → <b>Level 1</b>. Validation <b>blocks the policy route</b> (<code>VIDEO_ONLY_NOT_TRAINABLE</code>). 영상만 → 1등급, 정책 경로 차단.',
+      capRouter:'Routed to <b>pretraining-only</b> — representation / world-model. 표현·사전학습으로 라우팅.' },
+    { key:'blocked', title:'collected.public_web', stcol:'--s-source', hasAction:false, level:0, route:'archive', blocked:true,
+      capSource:'Same family, but the <b>license is unknown</b> and consent is missing. 같은 출처지만 라이선스·동의 불명.',
+      capGround:'Grounding never gets a chance — a legal gate fires first. 법적 게이트가 먼저 작동합니다.',
+      capValidate:'<b>HARD BLOCK</b> (<code>LICENSE_UNKNOWN</code>) → <b>Level 0</b>. Validation can only ever <b>downgrade</b>. 검증에서 하드 차단 → 0등급. 검증은 등급을 내릴 수만 있어요.',
+      capRouter:'Routed to <b>archive_only</b> — stored, never trained. 보관만, 학습하지 않음.' },
+    { key:'sim', title:'simulated', stcol:'--s-validate', hasAction:true, level:3, route:'sim', blocked:false,
+      capSource:'A MuJoCo rollout enters as <b>simulated</b> — carries <code>action.sim</code> + state. 시뮬레이션 롤아웃 — sim 액션·상태 포함.',
+      capGround:'Action is read straight from the simulator logs — nothing to recover. 액션을 시뮬레이터 로그에서 그대로 읽습니다.',
+      capValidate:'Real action+state present, but sim provenance <b>caps at Level 3</b>. 액션·상태는 있으나 sim 출처라 3등급 상한.',
+      capRouter:'Routed to <b>sim policy-pretraining</b> — never merged with real channels. real 채널과 절대 합치지 않음.' },
+    { key:'real', title:'real (teleop)', stcol:'--s-eval', hasAction:true, level:4, route:'policy', blocked:false,
+      capSource:'A teleop demo enters as <b>real</b> — calibrated embodiment, <code>action.robot</code>. 텔레오프 시연 — 보정된 임베디먼트, 실로봇 액션.',
+      capGround:'Robot action + state already attached; grounding just verifies. 실로봇 액션·상태가 이미 붙어 있어 검증만.',
+      capValidate:'Validated real-robot data with calibration → <b>Level 4</b>, top of the ladder. 보정된 실로봇 데이터 → 4등급, 사다리 최상단.',
+      capRouter:'Routed to <b>full supervised policy</b> training. 실로봇 지도학습으로 라우팅.' },
+  ];
+
+  function rName(id){ return routeById[id].name; }
+
+  function build(ep){
+    const S=[];
+    S.push({stage:'source',   label:ep.title.split(' ')[0], cap:ep.capSource});
+    S.push({stage:'normalize',label:'EpisodeManifest',
+      cap:'<b>Normalizer</b> emits one canonical <b>EpisodeManifest</b> + capability vector — the same record for every source. 모든 출처가 같은 표준 레코드를 내보냅니다.'});
+    S.push({stage:'perceive', label:'capability', stub:true,
+      cap:'<b>Perception</b> (Phase-2 stub) would detect / track / segment; here it just carries the capability vector. 인식 단계는 골격만 — 능력 벡터만 전달.'});
+    S.push({stage:'ground',   label: ep.hasAction?'action signal':'no action', stub:true, cap:ep.capGround});
+    S.push({stage:'validate', label: ep.blocked?'BLOCKED':('L'+ep.level+' · '+LEVELS[ep.level].nm),
+      level:ep.level, blocked:ep.blocked, cap:ep.capValidate});
+    if(!ep.blocked){
+      S.push({stage:'writer',  label:'LeRobot v3', level:ep.level,
+        cap:'<b>Writer</b> materializes a LeRobot v3 dataset; action namespaces stay distinct (<code>robot · sim · pseudo · latent</code>). 라이터가 v3로 구체화 — 네임스페이스 분리 유지.'});
+      S.push({stage:'registry',label:'registered', level:ep.level,
+        cap:'<b>Registry</b> records the dataset, its lineage, and a cost event. 레지스트리가 데이터셋·계보·비용 이벤트를 기록.'});
+    }
+    S.push({stage:'router', label:'→ '+rName(ep.route), level:ep.level, route:ep.route, done:true, cap:ep.capRouter});
+    return S.map(s=>({...s, epKey:ep.key}));
+  }
+
+  // ---------- render stations ----------
+  const stationsEl=document.getElementById('bpStations');
+  const stEls={};
+  STAGES.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='bp-station'; d.dataset.status=s.status;
+    d.style.setProperty('--scol',`var(${s.col})`);
+    d.innerHTML=`<div class="bp-ic">${s.ic}</div><div class="bp-nm">${s.name}</div>`+
+      `<div class="bp-ko">${s.ko}</div>`+
+      `<div class="bp-st">${s.status==='impl'?'live':s.status==='stub'?'stub':'phase 3'}</div>`;
+    stationsEl.appendChild(d); stEls[s.id]=d;
+  });
+
+  // ---------- render routes ----------
+  const routesEl=document.getElementById('bpRoutes');
+  const rtEls={};
+  ROUTES.forEach(r=>{
+    const d=document.createElement('div');
+    d.className='bp-route'; d.style.setProperty('--rcol',`var(${r.col})`);
+    d.innerHTML=`<div class="bp-rh">training route</div><div class="bp-rn">${r.name}</div><div class="bp-rk">${r.ko}</div>`;
+    routesEl.appendChild(d); rtEls[r.id]=d;
+  });
+
+  // ---------- render source picker ----------
+  const sourcesEl=document.getElementById('bpSources');
+  const srcEls={};
+  EPISODES.forEach((ep,i)=>{
+    const b=document.createElement('button');
+    b.className='bp-src'; b.style.setProperty('--scol',`var(${ep.stcol})`);
+    b.textContent=ep.key==='blocked'?'public_web ⚠':ep.title.split(' ')[0];
+    b.addEventListener('click',()=>{ setPlaying(false); state.cycle=i; resetCycle(true); });
+    sourcesEl.appendChild(b); srcEls[ep.key]=b;
+  });
+
+  // ---------- refs ----------
+  const card=document.getElementById('bpCard');
+  const cardTitle=document.getElementById('bpCardTitle');
+  const cardLabel=document.getElementById('bpCardLabel');
+  const belt=document.getElementById('bpBelt');
+  const capText=document.getElementById('bpCapText');
+  const capStep=document.getElementById('bpStep');
+  const caption=document.getElementById('bpCaption');
+  const playBtn=document.getElementById('bpPlay');
+  const rungEls=[0,1,2,3,4].map(n=>document.getElementById('rung'+n));
+
+  // ---------- geometry ----------
+  function stageCenter(id){
+    const beltRect=belt.getBoundingClientRect();
+    const r=stEls[id].getBoundingClientRect();
+    return (r.left-beltRect.left)+r.width/2;
+  }
+  function moveCardTo(id,animate){
+    const x=stageCenter(id)-card.offsetWidth/2;
+    if(!animate){ const p=card.style.transition; card.style.transition='none';
+      card.style.left=x+'px'; void card.offsetWidth; card.style.transition=p; }
+    else card.style.left=x+'px';
+  }
+  function layout(){ moveCardTo(state.steps[state.i]?.stage||'source',false); }
+
+  // ---------- state ----------
+  const state={ steps:[], i:0, playing:false, timer:null, cycle:0 };
+
+  function resetCycle(rebuild){
+    if(rebuild) state.steps=build(EPISODES[state.cycle%EPISODES.length]);
+    state.i=0; applyStep(0,false);
+  }
+
+  function applyStep(i,animate){
+    const step=state.steps[i]; if(!step) return;
+    const ep=EPISODES[state.cycle%EPISODES.length];
+    const stg=STAGES[sIdx[step.stage]];
+
+    STAGES.forEach(s=>{
+      const el=stEls[s.id];
+      el.classList.toggle('active', s.id===step.stage && !(step.blocked && step.stage==='validate'));
+      el.classList.toggle('blocked', !!step.blocked && s.id===step.stage);
+    });
+
+    // card
+    card.style.setProperty('--cardcol', step.blocked?'var(--bad)':`var(${stg.col})`);
+    cardTitle.textContent=ep.title;
+    cardLabel.textContent=step.label||'—';
+    let lc='var(--muted)';
+    if(step.blocked) lc='var(--bad)';
+    else if(step.level!=null && (step.stage==='validate'||sIdx[step.stage]>sIdx['validate'])) lc=`var(${LEVELS[step.level].col})`;
+    cardLabel.style.setProperty('--lblcol',lc);
+    cardLabel.style.setProperty('--lblbg', lc==='var(--muted)'?'transparent':`color-mix(in srgb, ${lc} 14%, transparent)`);
+    card.classList.toggle('done',!!step.done);
+    moveCardTo(step.stage,animate);
+
+    // routes — light the destination once we reach the router
+    const lit = step.route || (step.done?ep.route:null);
+    ROUTES.forEach(r=>rtEls[r.id].classList.toggle('lit', r.id===lit));
+
+    // ladder — highlight resolved rung from validation onward
+    const known = step.level!=null && (step.stage==='validate'||sIdx[step.stage]>=sIdx['validate']);
+    rungEls.forEach((el,n)=>el.classList.toggle('active', known && n===step.level));
+
+    // caption
+    capText.innerHTML=step.cap;
+    capStep.textContent=`${i+1} / ${state.steps.length}`;
+    caption.style.setProperty('--capcol', step.blocked?'var(--bad)':`var(${stg.col})`);
+
+    belt.classList.toggle('run', state.playing);
+
+    EPISODES.forEach((e,n)=>srcEls[e.key].classList.toggle('on', n===state.cycle%EPISODES.length));
+  }
+
+  function advance(){
+    if(state.i<state.steps.length-1){ state.i++; applyStep(state.i,true); }
+    else { state.cycle++; resetCycle(true); }
+  }
+  function scheduleNext(){
+    clearTimeout(state.timer); if(!state.playing) return;
+    const delay=parseInt(document.getElementById('bpSpeed').value,10);
+    state.timer=setTimeout(()=>{ advance(); scheduleNext(); }, delay);
+  }
+  function setPlaying(p){
+    state.playing=p;
+    playBtn.innerHTML=p?'⏸ Pause · 일시정지':'▶ Play · 재생';
+    playBtn.classList.toggle('primary',!p);
+    belt.classList.toggle('run',p);
+    if(p) scheduleNext(); else clearTimeout(state.timer);
+  }
+
+  playBtn.addEventListener('click',()=>setPlaying(!state.playing));
+  document.getElementById('bpNext').addEventListener('click',()=>{ setPlaying(false); advance(); });
+  document.getElementById('bpReset').addEventListener('click',()=>{ setPlaying(false); state.cycle=0; resetCycle(true); });
+  document.getElementById('bpSpeed').addEventListener('input',()=>{ if(state.playing) scheduleNext(); });
+  window.addEventListener('resize',layout);
+
+  resetCycle(true);
+  requestAnimationFrame(()=>requestAnimationFrame(layout));
+})();
+</script>
 
 </body>
 </html>
